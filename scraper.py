@@ -59,7 +59,7 @@ def convert_mth_strings ( mth_string ):
 for pages in itertools.count(1):
     n=str(pages)
     html = urllib2.urlopen(url.format(n))
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, 'lxml')
     links = soup.find_all('a', 'download button green CSV')
     for link in links:
         link_csv = 'http://data.bracknell-forest.gov.uk' + link['href']
