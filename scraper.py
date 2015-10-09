@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 
 #### IMPORTS 1.0
@@ -10,7 +9,6 @@ import urllib2
 import requests
 from datetime import datetime
 from bs4 import BeautifulSoup
-from dateutil.parser import parse
 import itertools
 
 #### FUNCTIONS 1.0
@@ -40,24 +38,26 @@ def validateFilename(filename):
 
 
 def validateURL(url):
-     try:
-        r = requests.get(url, allow_redirects=True, timeout=20)
+    try:
+        r = urllib2.urlopen(url)
         count = 1
-        while r.status_code == 500 and count < 4:
+        while r.getcode() == 500 and count < 4:
             print ("Attempt {0} - Status code: {1}. Retrying.".format(count, r.status_code))
             count += 1
-            r = requests.get(url, allow_redirects=True, timeout=20)
+            r = urllib2.urlopen(url)
         sourceFilename = r.headers.get('Content-Disposition')
+
         if sourceFilename:
             ext = os.path.splitext(sourceFilename)[1].replace('"', '').replace(';', '').replace(' ', '')
         else:
             ext = os.path.splitext(url)[1]
-        validURL = r.status_code == 200
-        validFiletype = ext in ['.csv', '.xls', '.xlsx']
+        validURL = r.getcode() == 200
+        validFiletype = ext in ['.csv', '.xls', '.xlsx', '.docx']
         return validURL, validFiletype
-     except:
+    except:
         print ("Error validating URL.")
         return False, False
+
 
 def validate(filename, file_url):
     validFilename = validateFilename(filename)
@@ -102,7 +102,6 @@ for pages in itertools.count(1):
 
 #### SCRAPE DATA
 
-
     links = soup.find_all('a', 'download button green CSV')
     for link in links:
         link_csv = 'http://data.bracknell-forest.gov.uk' + link['href']
@@ -127,7 +126,7 @@ for row in data:
     valid = validate(filename, file_url)
 
     if valid == True:
-        scraperwiki.sqlite.save(unique_keys=['l'], data={"l": file_url, "f": filename, "d": todays_date })
+        scraperwiki.sqlite.save(unique_keys=['f'], data={"l": file_url, "f": filename, "d": todays_date })
         print filename
     else:
         errors += 1
@@ -137,4 +136,3 @@ if errors > 0:
 
 
 #### EOF
-
