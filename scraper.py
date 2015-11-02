@@ -6,10 +6,9 @@ import os
 import re
 import scraperwiki
 import urllib2
-import requests
 from datetime import datetime
 from bs4 import BeautifulSoup
-import itertools
+
 
 #### FUNCTIONS 1.0
 
@@ -91,17 +90,20 @@ url = 'http://data.bracknell-forest.gov.uk/Download/finance/payments-over-500?pa
 errors = 0
 data = []
 
+
 #### READ HTML 1.0
 
+html = urllib2.urlopen(url)
+soup = BeautifulSoup(html, 'lxml')
+
+
+#### SCRAPE DATA
+import itertools
 
 for pages in itertools.count(1):
     n=str(pages)
     html = urllib2.urlopen(url.format(n))
     soup = BeautifulSoup(html, 'lxml')
-
-
-#### SCRAPE DATA
-
     links = soup.find_all('a', 'download button green CSV')
     for link in links:
         link_csv = 'http://data.bracknell-forest.gov.uk' + link['href']
