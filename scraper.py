@@ -108,9 +108,23 @@ for pages in itertools.count(1):
     for link in links:
         link_csv = 'http://data.bracknell-forest.gov.uk' + link['href']
         csvYr = link['href'].split('CSV')[0].split('/')[-2].split('-')[-1]
-        Mth = link['href'].split('CSV')[0].split('/')[-2].split('-')[-2]
-        dt_m = Mth[:3]
-        csvMth = convert_mth_strings(dt_m.upper())
+        if 'january-to-march' in link['href']:
+            csvMth = 'Q1'
+        if 'april-to-june' in link['href']:
+            csvMth = 'Q2'
+        if 'july-to-september' in link['href']:
+            csvMth = 'Q3'
+        if 'october-to-december' in link['href']:
+            csvMth = 'Q4'
+        if '-to-' not in link['href']:
+            csvMth = link['href'].split('CSV')[0].split('/')[-2].split('-')[-2][:3]
+        if 'september' in csvYr:
+            csvYr = '2015'
+        if 'june-to-september' in link['href']:
+            csvMth = 'Q0'
+        if 'february-to-may' in link['href']:
+            csvMth = 'Q0'
+        csvMth = convert_mth_strings(csvMth.upper())
         data.append([csvYr, csvMth, link_csv])
     block = soup.find('td', attrs = {'colspan':'4'})
     url_pages = block.find_all('a')
