@@ -108,6 +108,7 @@ for pages in itertools.count(1):
     for link in links:
         link_csv = 'http://data.bracknell-forest.gov.uk' + link['href']
         csvYr = link['href'].split('CSV')[0].split('/')[-2].split('-')[-1]
+        csvMth = ''
         if 'january-to-march' in link['href']:
             csvMth = 'Q1'
         if 'april-to-june' in link['href']:
@@ -123,6 +124,8 @@ for pages in itertools.count(1):
         if 'june-to-september' in link['href']:
             csvMth = 'Q0'
         if 'february-to-may' in link['href']:
+            csvMth = 'Q0'
+        if 'july-to-december' in link['href']:
             csvMth = 'Q0'
         csvMth = convert_mth_strings(csvMth.upper())
         data.append([csvYr, csvMth, link_csv])
